@@ -1,4 +1,4 @@
-# Recommender-Systems---Movies
+# Recommender Systems - Movies
 # Movie Recommendation System with User-Based Collaborative Filtering and SVD
 
 ## Overview
@@ -46,7 +46,7 @@ The performance of the recommendation systems is evaluated using **Mean Average 
 
 ## Usage
 
-1.  Clone the repository: `git clone `
+1.  Clone the repository: `git clone https://github.com/V-L-A-P-P/Recommender-Systems_Movies.git`
 2.  Install the required dependencies: `pip install -r requirements.txt`
 3.  Run the main script: `python main.py`
 
