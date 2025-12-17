@@ -153,3 +153,9 @@ Collaborative Filtering | Ranking Metrics
 Основной акцент сделан на инженерной корректности,
 честной оффлайн-оценке и практических аспектах,
 характерных для реальных production-систем.
+
+### Установка зависимостей
+
+```bash
+pip install -r requirements.txt
+
