@@ -1,5 +1,11 @@
-numpy
-pandas
-scikit-learn
-matplotlib
-tqdm
+python>=3.10
+
+numpy>=1.23
+pandas>=1.5
+scipy>=1.9
+
+scikit-learn>=1.2
+
+implicit>=0.7.2
+
+tqdm>=4.64
