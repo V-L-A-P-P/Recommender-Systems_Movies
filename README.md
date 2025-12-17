@@ -1,66 +1,155 @@
-# Recommender Systems - Movies
-# Movie Recommendation System with User-Based Collaborative Filtering and SVD
+# 🎬 Movie Recommendation System
 
-## Overview
+Персонализированная рекомендательная система фильмов,
+реализующая и сравнивающая несколько подходов коллаборативной фильтрации
+с фокусом на **ranking-метрики**, **explainability** и **инженерную корректность**.
 
-This project implements a movie recommendation system using two popular collaborative filtering techniques: User-Based Collaborative Filtering and Singular Value Decomposition (SVD). The goal is to predict which movies a user might like and recommend the top 10 movies for each user. The recommendation accuracy is evaluated using Mean Average Precision at 10 (MAP@10).
+Проект ориентирован на практические аспекты построения рекомендательных систем:
+разреженные данные, cold-start, корректная оффлайн-оценка и интерпретируемость моделей.
 
-## Dataset
+---
 
-The project utilizes a dataset where each row represents a movie rating given by a user. The dataset includes the following columns:
+## 📌 Цели проекта
 
-•   `userId`: Unique identifier for each user.
-•   `movieId`: Unique identifier for each movie.
-•   `rating`: The rating given by the user to the movie.
-•   `timestamp`: Timestamp of the rating.
-•   `title`: Title of the movie.
+- Реализовать несколько подходов к рекомендательным системам
+- Провести **честное сравнение моделей** в одинаковых условиях
+- Использовать **ranking-aware метрики** (Recall@K, NDCG@K, MAP@K)
+- Реализовать **cold-start handling**
+- Добавить **explainability** для рекомендаций
+- Продемонстрировать инженерный подход к ML-проекту
 
-'https://raw.githubusercontent.com/aiedu-courses/stepik_applied_tasks/main/datasets/movies_ratings.csv'
+---
 
-## Methods
+## 🧠 Реализованные модели
 
-This recommendation system employs the following two approaches:
+### 1. Popularity-based Recommender
+Базовая модель, рекомендующая наиболее популярные фильмы.
+Используется как **baseline** для сравнения качества рекомендаций.
 
-1.  **User-Based Collaborative Filtering:**
+---
 
-    •   **Concept:** Recommends movies to a user based on the preferences of other users who have similar taste.
-    •   **Implementation:**
-        *   Calculates user similarity based on their rating patterns.
-        *   Identifies the *k* most similar users for a given user.
-        *   Predicts the rating of a movie for a user by aggregating the ratings of similar users, weighted by their similarity scores.
-        *   Recommends the top 10 movies with the highest predicted ratings.
+### 2. User-Based Collaborative Filtering (UBCF)
+Рекомендации на основе сходства пользователей:
+- поиск ближайших пользователей,
+- агрегация их предпочтений.
 
-2.  **Singular Value Decomposition (SVD):**
+Добавляет персонализацию, но чувствителен к разреженности данных
+и шуму в пользовательских взаимодействиях.
 
-    •   **Concept:** Reduces the dimensionality of the user-movie rating matrix to extract latent features that represent the underlying preferences of users and the characteristics of movies.
-    •   **Implementation:**
-        *   Decomposes the user-movie rating matrix into three matrices.
-        *   Reduces the dimensionality by keeping only the top *k* singular values (and corresponding singular vectors).
-        *   Reconstructs an approximation of the original rating matrix using the reduced matrices.
-        *   Predicts missing ratings based on the reconstructed matrix.
-        *   Recommends the top 10 movies with the highest predicted ratings.
+---
 
-## Evaluation Metric
+### 3. Item-Based Collaborative Filtering (IBCF)
+Рекомендации на основе сходства фильмов:
+- item–item similarity (cosine),
+- агрегация вкладов ранее просмотренных фильмов.
 
-The performance of the recommendation systems is evaluated using **Mean Average Precision at 10 (MAP@10)**.  This metric measures the average precision of the top 10 recommended items for each user.
+Подход отличается большей стабильностью по сравнению с UBCF
+и поддерживает **прозрачные explainable рекомендации**.
 
-## Usage
+---
 
-1.  Clone the repository: `git clone https://github.com/V-L-A-P-P/Recommender-Systems_Movies.git`
-2.  Install the required dependencies: `pip install -r requirements.txt`
-3.  Run the main script: `python main.py`
+### 4. Confidence-weighted Implicit ALS
+Латентная факторная модель:
+- использует implicit feedback,
+- учитывает силу взаимодействий через confidence weighting,
+- масштабируется лучше neighborhood-подходов.
 
-## Dependencies
+Дополнительно реализован **cold-start fallback**
+на popularity-based рекомендации.
 
-•   NumPy
-•   Pandas
-•   Scikit-learn
-•   Matplotlib
-•   tqdm
+---
 
-## Future Work
+## 🔍 Explainability
 
-•   Explore hybrid recommendation approaches that combine collaborative filtering and content-based filtering.
-•   Implement a cold-start strategy to handle new users or movies with limited ratings.
-•   Tune the number of latent features *k* in SVD to optimize performance
+Explainability реализована для Item-Based CF.
 
+Каждая рекомендация может быть объяснена через вклад
+похожих ранее просмотренных фильмов:
+
+> «Фильм рекомендован, потому что он похож на фильмы,
+> которые пользователь уже смотрел»
+
+Объяснение включает:
+- список фильмов-оснований,
+- значения cosine similarity,
+- вклад каждого фильма в итоговый скор.
+
+Для ALS explainability ограничена по своей природе,
+что отражает типичный trade-off между качеством рекомендаций
+и интерпретируемостью моделей.
+
+Explainability особенно полезна для анализа качества,
+отладки моделей и потенциальной интеграции рекомендаций
+в пользовательский интерфейс.
+
+---
+
+## 📊 Evaluation Pipeline
+
+Все модели оцениваются в **едином offline evaluation pipeline**,
+что обеспечивает корректное и воспроизводимое сравнение.
+
+### Используемые метрики
+- **Recall@10** — покрытие релевантных объектов
+- **NDCG@10** — качество ранжирования
+- **MAP@10** — устойчивость и точность рекомендаций
+
+Метрики считаются **per-user** с последующим усреднением.
+
+---
+
+## 📈 Результаты
+
+Финальные результаты показывают:
+
+- Popularity — минимальный baseline
+- UBCF и IBCF — небольшие улучшения за счёт персонализации
+- **Confidence-weighted ALS** — значительное превосходство по всем ranking-метрикам
+
+Наибольший прирост качества показала модель confidence-weighted ALS,
+превзойдя baseline более чем на порядок по NDCG@10 и MAP@10.
+
+Это подтверждает преимущество латентных факторных моделей
+в условиях разреженных пользовательских данных.
+
+---
+
+## 🧩 Основные инженерные сложности
+
+В процессе реализации были решены следующие задачи:
+
+- корректная индексация пользователей и фильмов,
+- работа с разреженными матрицами (CSR),
+- согласование осей user–item в implicit ALS,
+- корректное использование API библиотеки `implicit`,
+- обработка cold-start пользователей,
+- построение единого evaluation pipeline.
+
+---
+
+## 🛠 Используемый стек
+
+Python | Pandas | NumPy | SciPy | Scikit-learn | Implicit ALS |
+Collaborative Filtering | Ranking Metrics
+
+
+---
+
+## 🚀 Возможные улучшения
+
+- добавление REST API и деплой модели,
+- online A/B evaluation,
+- гибридные рекомендации (CF + content-based),
+- ускорение IBCF через кеширование similarity,
+- explainability для ALS на поведенческом уровне.
+
+---
+
+## 📝 Вывод
+
+Проект демонстрирует полный цикл разработки рекомендательной системы:
+от данных и моделей до оценки качества и интерпретации результатов.
+
+Основной акцент сделан на инженерной корректности,
+честной оффлайн-оценке и практических аспектах,
+характерных для реальных production-систем.
